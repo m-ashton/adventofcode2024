@@ -7,10 +7,10 @@ def differences(report)
 end
 
 def safe?(differences)
-  if differences[0] < 0
-    return false if differences.any? { |diff| diff > 0 }
+  if differences[0].negative?
+    return false if differences.any? { |diff| diff.positive? }
   else
-    return false if differences.any? { |diff| diff < 0 }
+    return false if differences.any? { |diff| diff.negative? }
   end
   differences.all? { |diff| diff.abs >= 1 && diff.abs <= 3 }
 end

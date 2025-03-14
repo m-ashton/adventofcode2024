@@ -7,17 +7,18 @@ def differences(report)
 end
 
 def safe?(differences)
-  if differences[0].negative?
-    return false if differences.any? { |diff| diff.positive? }
+  sign_test = if differences[0].negative?
+    :negative?
   else
-    return false if differences.any? { |diff| diff.negative? }
+    :positive?
   end
-  differences.all? { |diff| diff.abs >= 1 && diff.abs <= 3 }
+  differences.all? { |diff| diff.send(sign_test) && diff.abs >= 1 && diff.abs <= 3 }
 end
 
 def part1
   reports = get_reports_from_file('./input.txt')
-  puts reports.filter { |report| safe?(differences(report)) }.count
+  safe_reports = reports.filter { |report| safe?(differences(report)) }
+  puts safe_reports.count
 end
 
 def part2
@@ -29,11 +30,14 @@ def part2
       acc << candidate_report
     end
   end
-  puts(candidate_reports.filter do |candidates|
+
+  safe_reports = candidate_reports.filter do |candidates|
     candidates.any? do |report|
       safe?(differences(report))
     end
-  end.count)
+  end
+
+  puts safe_reports.count
 end
 
 ARGV[0] == '2' ? puts(part2) : puts(part1)

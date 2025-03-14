@@ -23,15 +23,17 @@ end
 def part2
   reports = get_reports_from_file('./input.txt')
   candidate_reports = reports.map do |report|
-    [].tap do |candidates|
-      (0..report.size - 1).each do |i|
-        candidate_report = report.dup
-        candidate_report.delete_at(i)
-        candidates << candidate_report
-      end
+    (0..report.size - 1).reduce([]) do |acc, i|
+      candidate_report = report.dup
+      candidate_report.delete_at(i)
+      acc << candidate_report
     end
   end
-  puts candidate_reports.filter { |candidates| candidates.any? { |report| safe?(differences(report)) } }.count
+  puts(candidate_reports.filter do |candidates|
+    candidates.any? do |report|
+      safe?(differences(report))
+    end
+  end.count)
 end
 
 ARGV[0] == '2' ? puts(part2) : puts(part1)

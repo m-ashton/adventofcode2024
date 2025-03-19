@@ -5,9 +5,6 @@ def get_input(filename)
 end
 
 def part1
-  # for each character in input string
-  # expect m, if m expect u, if u expect l, if (, etc.
-  # if unexpected, go back to expecting m
   program = get_input('./input.txt')
   segment = program
   start_pos = 0

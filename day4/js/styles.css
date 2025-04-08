@@ -1,0 +1,12 @@
+.puzzle {
+  font-family: monospace;
+}
+
+.cursor {
+  outline-style: solid;
+  outline-color: red;
+}
+
+.accepted-cell {
+  background-color: green;
+}

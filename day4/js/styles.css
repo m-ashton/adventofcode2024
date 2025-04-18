@@ -2,11 +2,11 @@
   font-family: monospace;
 }
 
-.cursor {
+td.cursor {
   outline-style: solid;
   outline-color: red;
 }
 
-.accepted-cell {
+td.accepted-cell {
   background-color: green;
 }

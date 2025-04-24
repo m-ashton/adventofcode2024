@@ -1,6 +1,5 @@
 class LabMap
-  attr_reader :num_rows, :num_columns, :grid
-  attr_accessor :guard_pos, :direction
+  attr_reader :num_rows, :num_columns, :guard_pos, :grid, :direction
 
   DIRECTION_TO_VELOCITY = {
     '^' => [0, -1],
@@ -66,42 +65,30 @@ def part1
   visited_locations.count
 end
 
+# FIXME: too slow and wrong
 def part2
   map = get_input('input.txt')
-  loop_producing_obstacles = []
-  while map.guard_in_bounds?
-    # put an obstacle directly in the guard's way, run until you loop or
-    # are off the map
-
-    velocity = LabMap::DIRECTION_TO_VELOCITY[map.direction.first]
-    obstacle_loc = map.guard_pos.zip(velocity).map(&:sum)
-    if map.grid[obstacle_loc] == '#'
-      map.move
-      next
-    end
-
-    map.grid[obstacle_loc] = '#'
-    visited_locations = {}
-    visited_locations[map.guard_pos] = map.direction.first
-    start_pos = map.guard_pos.dup
-    start_direction = map.direction.dup
-    while map.guard_in_bounds?
-      map.move
-      if visited_locations[map.guard_pos] == map.direction.first
-        if loop_producing_obstacles.include?(obstacle_loc)
-          puts "already found #{obstacle_loc}"
+  positions_with_loop = []
+  (0..map.num_columns).each do |x|
+    (0..map.num_rows).each do |y|
+      puts "testing #{x}, #{y}"
+      visited_locations = {}
+      next if map.grid[[x,y]] == '#'
+      map.grid[[x,y]] = '#'
+      while map.guard_in_bounds?
+        visited_locations[map.guard_pos] = map.direction.first
+        map.move
+        if visited_locations[map.guard_pos] == map.direction.first
+          positions_with_loop << [x,y]
+          break
         end
-        loop_producing_obstacles << obstacle_loc
-        break
       end
-      visited_locations[map.guard_pos] = map.direction.first
+      # FIXME: would be a lot nicer to do this in a functional way without
+      # map.move side-effects
+      map = get_input('input.txt')
     end
-    map.guard_pos = start_pos
-    map.direction = start_direction
-    map.grid.delete(obstacle_loc)
-    map.move
   end
-  loop_producing_obstacles.count
+  positions_with_loop.count
 end
 
 ARGV[0] == '2' ? puts(part2) : puts(part1)

@@ -45,7 +45,7 @@ class LabMap
 
   def guard_in_bounds?
     @guard_pos[0] < @num_columns &&
-      @guard_pos[0] >= 0
+      @guard_pos[0] >= 0 &&
       @guard_pos[1] < @num_rows &&
       @guard_pos[1] >= 0
   end
@@ -65,7 +65,30 @@ def part1
   visited_locations.count
 end
 
+# FIXME: too slow and wrong
 def part2
+  map = get_input('input.txt')
+  positions_with_loop = []
+  (0..map.num_columns).each do |x|
+    (0..map.num_rows).each do |y|
+      puts "testing #{x}, #{y}"
+      visited_locations = {}
+      next if map.grid[[x,y]] == '#'
+      map.grid[[x,y]] = '#'
+      while map.guard_in_bounds?
+        visited_locations[map.guard_pos] = map.direction.first
+        map.move
+        if visited_locations[map.guard_pos] == map.direction.first
+          positions_with_loop << [x,y]
+          break
+        end
+      end
+      # FIXME: would be a lot nicer to do this in a functional way without
+      # map.move side-effects
+      map = get_input('input.txt')
+    end
+  end
+  positions_with_loop.count
 end
 
 ARGV[0] == '2' ? puts(part2) : puts(part1)

@@ -1,3 +1,6 @@
+require 'rainbow/refinement'
+using Rainbow
+
 class LabMap
   attr_reader :num_rows, :num_columns, :guard_pos, :grid, :direction
 
@@ -32,10 +35,28 @@ class LabMap
     end
   end
 
+  def print(overlay = {})
+    (0...@num_rows).each do |y|
+      puts((0...@num_columns).map do |x|
+        if @guard_pos == [x, y]
+          char = @direction.first.green
+        elsif overlay[[x,y]]
+          char = overlay[[x,y]].green
+        elsif @grid[[x,y]] == '#'
+          char = '#'.red
+        else
+          char = '.'
+        end
+        char
+      end.join)
+    end
+    puts
+  end
+
   def move
     velocity = DIRECTION_TO_VELOCITY[@direction.first]
     next_pos = [@guard_pos[0] + velocity[0], @guard_pos[1] + velocity[1]]
-    if @grid[next_pos] == '#'
+    while @grid[next_pos] == '#'
       @direction.rotate!(1)
       velocity = DIRECTION_TO_VELOCITY[@direction.first]
       next_pos = [@guard_pos[0] + velocity[0], @guard_pos[1] + velocity[1]]
@@ -56,7 +77,7 @@ def get_input(filename)
 end
 
 def part1
-  map = get_input('input.txt')
+  map = get_input('sample.txt')
   visited_locations = {}
   while map.guard_in_bounds?
     visited_locations[map.guard_pos] = 'x'
@@ -65,26 +86,25 @@ def part1
   visited_locations.count
 end
 
-# FIXME: too slow and wrong
 def part2
   map = get_input('input.txt')
   positions_with_loop = []
-  (0..map.num_columns).each do |x|
-    (0..map.num_rows).each do |y|
-      puts "testing #{x}, #{y}"
-      visited_locations = {}
-      next if map.grid[[x,y]] == '#'
+  (0...map.num_columns).each do |x|
+    puts "testing column #{x}"
+    (0...map.num_rows).each do |y|
+      visited_locations = Hash.new { |h, k| h[k] = Array.new }
+      next if map.grid[[x,y]] == '#' || map.grid[map.guard_pos] == '#'
       map.grid[[x,y]] = '#'
       while map.guard_in_bounds?
-        visited_locations[map.guard_pos] = map.direction.first
+        visited_locations[map.guard_pos] << map.direction.first
         map.move
-        if visited_locations[map.guard_pos] == map.direction.first
+        if visited_locations[map.guard_pos].include?(map.direction.first)
           positions_with_loop << [x,y]
+          # map.print(visited_locations)
+          # puts "Found a loop starting at #{map.guard_pos}"
           break
         end
       end
-      # FIXME: would be a lot nicer to do this in a functional way without
-      # map.move side-effects
       map = get_input('input.txt')
     end
   end

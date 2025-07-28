@@ -26,7 +26,8 @@ def part1
     positions.combination(2) do |antenna_pair|
       candidate_antinodes = compute_antinodes(*antenna_pair)
       inbounds_antinodes = candidate_antinodes.filter do |antinode|
-        (0...width).include?(antinode[0]) && (0...height).include?(antinode[1])
+        antinode[0] >= 0 && antinode[0] < width &&
+          antinode[1] >= 0 && antinode[1] < height
       end
       antinodes.merge(inbounds_antinodes)
     end

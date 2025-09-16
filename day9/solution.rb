@@ -34,32 +34,27 @@ end
 def part2
   disk = initialize_disk('./input.txt')
 
-  file_ids = disk.uniq.compact.reverse
-  file_ids.each do |file_id|
+  disk.uniq.compact.reverse.each do |file_id|
     free_space_cursor = 0
-    file_size = 1
-    file_cursor = disk.find_index(file_id)
+    file_size = 0
+    file_start = disk.find_index(file_id)
 
-    until (disk[file_cursor + 1] != file_id) do
-      file_cursor += 1
-      file_size += 1
-    end
-    file_cursor -= file_size - 1
+    file_size += 1 until (disk[file_start + file_size] != file_id)
 
-    while file_cursor < disk.size && free_space_cursor < file_cursor
-      until disk[free_space_cursor].nil?
-        free_space_cursor += 1
-      end
+    while free_space_cursor < file_start
+      free_space_cursor += 1 until disk[free_space_cursor].nil?
       free_space_end = free_space_cursor
+
       while free_space_end < disk.size && disk[free_space_end].nil?
         free_space_end += 1
       end
+
       free_space_size = free_space_end - free_space_cursor
       if file_size <= free_space_size
         (free_space_cursor...free_space_cursor + file_size).each do |pos|
           disk[pos] = file_id
         end
-        (file_cursor...file_cursor + file_size).each do |pos|
+        (file_start...file_start + file_size).each do |pos|
           disk[pos] = nil
         end
         break

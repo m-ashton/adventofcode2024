@@ -33,6 +33,7 @@ end
 
 def part2
   disk = initialize_disk('./input.txt')
+  # puts disk.inspect
 
   disk.uniq.compact.reverse.each do |file_id|
     free_space_cursor = 0
@@ -59,7 +60,7 @@ def part2
         end
         break
       end
-      free_space_cursor += free_space_size
+      free_space_cursor = free_space_end
     end
     # puts disk.inspect
   end

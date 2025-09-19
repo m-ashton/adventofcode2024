@@ -33,7 +33,6 @@ end
 
 def part2
   disk = initialize_disk('./input.txt')
-  # puts disk.inspect
 
   disk.uniq.compact.reverse.each do |file_id|
     free_space_cursor = 0
@@ -44,6 +43,7 @@ def part2
 
     while free_space_cursor < file_start
       free_space_cursor += 1 until disk[free_space_cursor].nil?
+      break if free_space_cursor >= file_start
       free_space_end = free_space_cursor
 
       while free_space_end < disk.size && disk[free_space_end].nil?
@@ -62,7 +62,6 @@ def part2
       end
       free_space_cursor = free_space_end
     end
-    # puts disk.inspect
   end
   disk.map.with_index { |id, i| id.nil? ? 0 : id * i }.sum
 end

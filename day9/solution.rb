@@ -66,4 +66,4 @@ def part2
   disk.map.with_index { |id, i| id.nil? ? 0 : id * i }.sum
 end
 
-ARGV[0] == '2' ? puts(part2) : puts(part1.inspect)
+ARGV[0] == '2' ? puts(part2) : puts(part1)

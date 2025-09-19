@@ -12,25 +12,26 @@ def read_file(path)
   end
 end
 
+# Returns an array of level 9 positions that are achieved. If the same position
+# is reached by n different paths, it will be present n times.
 def walk(pos, grid)
   if grid[pos] == 9
-    Set.new([pos])
+    [pos]
   else
-    Set.new.tap do |nines|
-      adjacent_positions(pos, grid[:max_x], grid[:max_y]).each do |adjacent_pos|
-        if grid[adjacent_pos] == grid[pos] + 1
-          nines.merge(walk(adjacent_pos, grid))
-        end
+    adjacent_positions(pos, grid[:max_x], grid[:max_y]).flat_map do |adjacent_pos|
+      if grid[adjacent_pos] == grid[pos] + 1
+        walk(adjacent_pos, grid)
       end
-    end
+    end.compact
   end
 end
 
-def score(pos, grid)
+def score(pos, grid, part2 = false)
   if grid[pos] != 0
     0
   else
-    walk(pos, grid).count
+    nines = walk(pos, grid)
+    part2 ? nines.count : nines.uniq.count
   end
 end
 
@@ -54,7 +55,8 @@ def part1
 end
 
 def part2
-
+  grid = read_file('./input.txt')
+  puts(grid.keys.sum { |pos| score(pos, grid, true) })
 end
 
 ARGV[0] == '2' ? puts(part2) : puts(part1)
